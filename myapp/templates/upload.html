@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+    <style>
+        /* Center the loader */
+        .loader-container {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Disable form */
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Subscription info styling */
+        .subscription-info {
+            background-color: #f0f8ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #dcdcdc;
+        }
+
+        .subscription-info h3 {
+            margin-top: 0;
+        }
+
+		.greeting {
+			font-size: 18px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+    </style>
+</head>
+<body>
+    <header>
+		{% if request.user.is_authenticated %}
+			<a href="{% url 'logout' %}" style="float: right; margin: 10px;">Logout</a>
+		{% else %}
+			<a href="{% url 'login' %}" style="float: right; margin: 10px;">Login</a>
+		{% endif %}
+		<h2>Upload Files</h2>
+    </header>
+    
+    {% if request.user.is_authenticated %}
+        <div class="subscription-info">
+			<p class="greeting">Hi, {{ request.user.username }}!</p>
+            <h3>Your Current Plan: 
+                {% if user_subscription %}
+                    {{ user_subscription.plan.name }}
+                {% else %}
+                    -
+                {% endif %}
+            </h3>
+            <p>Status: 
+                {% if user_subscription %}
+                    {{ user_subscription.status }}
+                {% else %}
+                    Inactive
+                {% endif %}
+            </p>
+            <p>Unused Credits: 
+                {% if user_subscription %}
+                    {{ user_subscription.unused_credits }}
+                {% else %}
+                    0
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+    
+    <form id="uploadForm" action="{% url 'upload_videos' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <label for="input1">Upload Your Hooks:</label>
+        <input type="file" name="input1" accept="video/*" multiple>
+        <br><br>
+
+        <label for="input2">Upload Your Leads:</label>
+        <input type="file" name="input2" accept="video/*" multiple>
+        <br><br>
+
+        <label for="input3">Upload Your Main Body:</label>
+        <input type="file" name="input3" accept="video/*" required>
+        <br><br>
+
+        <button type="submit" id="submitBtn">Process</button>
+		<a href="{% url 'plans_view' %}" style="display: block; width: 200px; margin: 20px auto; text-align: center; padding: 10px; background-color: #3498db; color: white; border-radius: 5px; text-decoration: none;">
+			Subscribe Now
+		</a>
+    </form>
+
+    {% if message %}
+        <p id="successMessage">{{ message }}</p>
+    {% endif %}
+
+    <!-- Loader (Hidden by default) -->
+    <div class="loader-container" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let form = document.getElementById("uploadForm");
+            let loader = document.getElementById("loadingOverlay");
+            let successMessage = document.getElementById("successMessage");
+
+            // Ensure loader is hidden when page loads
+            loader.style.display = "none";
+
+            form.addEventListener("submit", function(event) {
+                // Show loading overlay only when form is submitted
+                loader.style.display = "flex";
+
+                // Disable form inputs & button
+                form.classList.add("disabled");
+            });
+
+            // Hide loader when success message appears
+            if (successMessage) {
+                loader.style.display = "none";
+                form.classList.remove("disabled");
+            }
+        });
+    </script>
+
+</body>
+</html>

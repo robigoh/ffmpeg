@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plans</title>
+</head>
+<body>
+    <h1>Available Plans</h1>
+    <ul>
+        {% for plan in plans %}
+            <li>{{ plan.name }} - ${{ plan.price_per_month }} per month</li>
+        {% empty %}
+            <li>No plans available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

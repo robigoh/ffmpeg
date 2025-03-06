@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans</title>
+</head>
+<body>
+    <h1>Choose Your Plan</h1>
+    {% if user_subscription %}
+        <h2>Your Current Plan: {{ user_subscription.plan.name }}</h2>
+        <p>Status: {{ user_subscription.status }}</p>
+        <p>Unused Credits: {{ user_subscription.unused_credits }}</p>
+    {% else %}
+        <h2>You are not subscribed to any plan.</h2>
+    {% endif %}
+    
+    <ul>
+        {% for plan in plans %}
+        <li>
+            <h3>{{ plan.name }}</h3>
+            <p>{{ plan.description }}</p>
+            <p>Price: ${{ plan.price_per_month }} / month</p>
+            <p>Ad Variations Allowed: {{ plan.ad_variations_per_month }}</p>
+            
+            <form action="{% url 'subscribe' plan.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Subscribe</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+	<a href="{% url 'home' %}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #e74c3c; color: white; text-decoration: none; border-radius: 5px;">Cancel and Go Back</a>
+</body>
+</html>
