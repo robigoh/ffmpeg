@@ -3,7 +3,7 @@ version: "3.8"
 services:
   web:
     build: .
-    container_name: django_app
+    container_name: django_ffmpeg_backend_app
     volumes:
       - .:/app
     ports:
@@ -21,7 +21,7 @@ services:
 
   db:
     image: postgres:16
-    container_name: postgres_db
+    container_name: postgres_ffmpeg_backend__db
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
